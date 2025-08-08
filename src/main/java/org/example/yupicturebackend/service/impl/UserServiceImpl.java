@@ -108,6 +108,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 		}
 		return null;
 	}
+
+	@Override
+	public User getLoginUser(HttpServletRequest request) {
+		// 先判断是否已登录
+		Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+		User currentUser = (User) userObj;
+		if (currentUser == null || currentUser.getId() == null){
+			throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+		}
+		// 从数据库查询（追求性能的话可以注释，直接走缓存）
+		long userId = currentUser.getId();
+		currentUser = this.getById(userId);
+		if (currentUser == null){
+			throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+		}
+		return currentUser;
+	}
+
+	@Override
+	public boolean userLogout(HttpServletRequest request) {
+		// 先判断是否已登录
+		Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+		if (userObj != null) {
+			request.getSession().removeAttribute(USER_LOGIN_STATE);
+			return true;
+		}
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+	}
 }
 
 
