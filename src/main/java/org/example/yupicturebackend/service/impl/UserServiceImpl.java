@@ -1,5 +1,6 @@
 package org.example.yupicturebackend.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,6 +9,7 @@ import org.example.yupicturebackend.entity.dto.user.UserLoginDTO;
 import org.example.yupicturebackend.entity.dto.user.UserRegisterDTO;
 import org.example.yupicturebackend.entity.enums.UserRoleEnum;
 import org.example.yupicturebackend.entity.vo.LoginUserVO;
+import org.example.yupicturebackend.entity.vo.UserVO;
 import org.example.yupicturebackend.excrption.BusinessException;
 import org.example.yupicturebackend.excrption.ErrorCode;
 import org.example.yupicturebackend.service.UserService;
@@ -17,6 +19,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.example.yupicturebackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -135,6 +141,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 			return true;
 		}
 		throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+	}
+
+	@Override
+	public UserVO getUserVO(User user) {
+		if (user == null){
+			return null;
+		}
+		UserVO userVO = new UserVO();
+		BeanUtils.copyProperties(user, userVO);
+		return userVO;
+	}
+
+	@Override
+	public List<UserVO> getUserVOList(List<User> userList) {
+		if (CollUtil.isEmpty(userList)){
+			return new ArrayList<>();
+		}
+		return userList.stream().map(this::getUserVO).collect(Collectors.toList());
 	}
 }
 

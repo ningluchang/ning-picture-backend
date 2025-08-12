@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.example.yupicturebackend.entity.dto.user.UserLoginDTO;
 import org.example.yupicturebackend.entity.dto.user.UserRegisterDTO;
 import org.example.yupicturebackend.entity.vo.LoginUserVO;
+import org.example.yupicturebackend.entity.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public interface UserService extends IService<User> {
 	/**
@@ -43,4 +45,18 @@ public interface UserService extends IService<User> {
 	 * @return 是否注销成功
 	 */
 	boolean userLogout(HttpServletRequest request);
+
+	/**
+	 * 获取脱敏后的用户信息
+	 * @param user 用户信息
+	 * @return 脱敏后的用户信息
+	 */
+	UserVO getUserVO(User user);
+
+	/**
+	 * 获取脱敏后的用户列表
+	 * @param userList 用户列表
+	 * @return 脱敏后的用户列表
+	 */
+	List<UserVO> getUserVOList(List<User> userList);
 }
