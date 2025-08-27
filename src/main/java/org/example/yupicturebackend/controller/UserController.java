@@ -29,7 +29,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginDTO dto, HttpServletRequest request){
+	public BaseResponse<?> userLogin(@RequestBody UserLoginDTO dto, HttpServletRequest request){
 		ThrowUtils.throwIf(dto == null, ErrorCode.PARAMS_ERROR);
 		LoginUserVO result = userService.userLogin(dto, request);
 		return ResultUtils.success(result);

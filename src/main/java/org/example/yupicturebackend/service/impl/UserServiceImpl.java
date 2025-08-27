@@ -1,11 +1,14 @@
 package org.example.yupicturebackend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.example.yupicturebackend.entity.User;
 import org.example.yupicturebackend.entity.dto.user.UserLoginDTO;
+import org.example.yupicturebackend.entity.dto.user.UserQueryDTO;
 import org.example.yupicturebackend.entity.dto.user.UserRegisterDTO;
 import org.example.yupicturebackend.entity.enums.UserRoleEnum;
 import org.example.yupicturebackend.entity.vo.LoginUserVO;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.example.yupicturebackend.constant.UserConstant.USER_LOGIN_STATE;
 
+@Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 		implements UserService {
@@ -98,6 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 		queryWrapper.eq("userPassword", encryptedPassword);
 		user = this.baseMapper.selectOne(queryWrapper);
 		if (user == null) {
+			log.info("用户不存在");
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
 		}
 		LoginUserVO loginUserVO = getLoginUserVO(user);
@@ -159,6 +164,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 			return new ArrayList<>();
 		}
 		return userList.stream().map(this::getUserVO).collect(Collectors.toList());
+	}
+
+	@Override
+	public QueryWrapper<User> getQueryWrapper(UserQueryDTO dto) {
+		if (dto == null){
+			throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求参数为空");
+		}
+		Long id = dto.getId();
+		String userName = dto.getUserName();
+		String userAccount = dto.getUserAccount();
+		String userProfile = dto.getUserProfile();
+		String userRole = dto.getUserRole();
+		String sortField = dto.getSortField();
+		String sortOrder = dto.getSortOrder();
+		QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
+		queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
+		queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
+		queryWrapper.like(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+		queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
+		queryWrapper.orderBy(StrUtil.isNotEmpty(sortField),sortOrder.equals("ascend"), sortField);
+		return queryWrapper;
 	}
 }
 

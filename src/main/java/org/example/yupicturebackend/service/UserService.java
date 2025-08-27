@@ -1,8 +1,10 @@
 package org.example.yupicturebackend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.yupicturebackend.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.example.yupicturebackend.entity.dto.user.UserLoginDTO;
+import org.example.yupicturebackend.entity.dto.user.UserQueryDTO;
 import org.example.yupicturebackend.entity.dto.user.UserRegisterDTO;
 import org.example.yupicturebackend.entity.vo.LoginUserVO;
 import org.example.yupicturebackend.entity.vo.UserVO;
@@ -59,4 +61,11 @@ public interface UserService extends IService<User> {
 	 * @return 脱敏后的用户列表
 	 */
 	List<UserVO> getUserVOList(List<User> userList);
+
+	/**
+	 * 根据用户传入参数,构造sql查询
+	 * @param dto 查询条件
+	 * @return 查询条件
+	 */
+	QueryWrapper<User> getQueryWrapper(UserQueryDTO dto);
 }
